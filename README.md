@@ -51,9 +51,9 @@ _Disclaimer: I'm not encouraging/supporting piracy, this is for information only
       - [Setup Wireguard](#setup-wireguard)
         - [Docker container](#wireguard-docker-container)
         - [Configuration and usage](#wireguard-configuration)
-      - [Setup Overseerr](#overseerr-setup)
-        - [Docker container](#overseerr-docker-container)
-        - [Configuration and usage](#overseerr-configuration)
+      - [Setup Seerr](#seerr-setup)
+        - [Docker container](#seerr-docker-container)
+        - [Configuration and usage](#seerr-configuration)
       - [Setup Arcane](#arcane-setup)
         - [Docker container](#arcane-docker-container)
         - [Configuration and usage](#arcane-configuration)
@@ -88,7 +88,7 @@ This is composed of multiple tools working together to have an automated way to 
 
 **Optional**:
 
-- [Overseerr](https://overseerr.dev/): is a free and open source software application for managing requests for your media library. It integrates with your existing services, such as Sonarr, Radarr, and Plex!
+- [Seerr](https://seerr.dev/): is a free and open source software application for managing requests for your media library. It integrates with your existing services, such as Sonarr, Radarr, and Plex!
 
 - [Wireguard](https://github.com/linuxserver/docker-wireguard): is an extremely simple yet fast and modern VPN that utilizes state-of-the-art cryptography. This will allow us to connect to our home network from anywhere and use the Plex app outside of our house without using Plex servers for routing.
 
@@ -814,42 +814,51 @@ All the user's credentials will be created inside the config folder for wireguar
 ***
 
 
-## Overseerr Setup
+## Seerr Setup
 
-We'll use Overseerr [official Docker image](https://hub.docker.com/r/sctx/overseerr)
-Overseerr is a request management and media discovery tool built to work with your existing Plex ecosystem.
-Overseerr helps you find media you want to watch. With inline recommendations and suggestions.
+We'll use Seerr [official Docker image](https://github.com/seerr-team/seerr/pkgs/container/seerr)
+Seerr is a request management and media discovery tool built to work with your existing Plex ecosystem.
+Seerr helps you find media you want to watch. With inline recommendations and suggestions.
 
 It will allow you to request Movies and TV Shows without the need to go to Radarr or Sonarr, this is really helpful when there are other users in the system that we do not want to give access to Sonarr or Radarr for them to request movies or tv shows.
 
-### Overseerr Docker Container
+### Seerr Docker Container
 
 
 ```yaml
-  overseerr:
-    image: sctx/overseerr:latest
-    container_name: overseerr
+  
+  seerr:
+    image: ghcr.io/seerr-team/seerr:latest
+    init: true
+    container_name: seerr
     environment:
       - LOG_LEVEL=debug
-      - TZ=${TZ}
+      - TZ=Asia/Tashkent
+      - PORT=5055 #optional
     ports:
       - 5055:5055
     volumes:
-      - ${ROOT}/MediaCenter/config/overseerr/config:/app/config
+      - '${ROOT}/MediaCenter/config/seerr/config:/app/config'
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
     restart: unless-stopped
 ```
 
 
 Then run the container with `docker-compose up -d --remove-orphans`.
 
-To follow container logs, run `docker-compose logs -f overseerr`.
+To follow container logs, run `docker-compose logs -f seerr`.
 
 
-#### Overseerr Configuration
+#### Seerr Configuration
 
-The Web UI for Overseerr will be available on port 5055. Load it up and you will be greeted with this setup page:
+The Web UI for Seerr will be available on port 5055. Load it up and you will be greeted with this setup page:
 
-![Overseerr start page](img/overseerr_startpage.png)
+![Seerr start page](img/seerr_startpage.png)
 
 You will need to log in with your Plex account.
 
@@ -861,19 +870,19 @@ Port: your Plex Docker container port
 
 Select the Libraries that you want to scan and hit Start Scan
 
-![Overseerr configuration](img/Overseerr_settings.png)
+![Seerr configuration](img/seerr_plex_setup.png)
 
 
 Radarr and Sonarr Setup
 in the following screen configure the both Radarr and Sonarr
 
-![Overseerr radar and sonar configuration](img/Overseerr_sonarr_radarr_setup.png)
+![Seerr radar and sonar configuration](img/Seerr_sonarr_setup.png)
 
 for each, we need to define it as the default server set the IP address (the port should be the default one) and the API Key, then click on test.
 after that fill the remaining settings with your desired configuration.
 
 
-![Overseerr radar sample configuration](img/Overseerr_radarr_setup.png)
+![Seerr radar sample configuration](img/Seerr_radarr_setup.png)
 
 #### Arcane Setup
 
