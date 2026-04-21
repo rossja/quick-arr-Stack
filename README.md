@@ -876,13 +876,13 @@ Select the Libraries that you want to scan and hit Start Scan
 Radarr and Sonarr Setup
 in the following screen configure the both Radarr and Sonarr
 
-![Seerr radar and sonar configuration](img/Seerr_sonarr_setup.png)
+![Seerr radar and sonar configuration](img/seerr_sonarr_setup.png)
 
 for each, we need to define it as the default server set the IP address (the port should be the default one) and the API Key, then click on test.
 after that fill the remaining settings with your desired configuration.
 
 
-![Seerr radar sample configuration](img/Seerr_radarr_setup.png)
+![Seerr radar sample configuration](img/seerr_radarr_setup.png)
 
 #### Arcane Setup
 
